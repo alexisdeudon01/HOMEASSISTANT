@@ -1,0 +1,31 @@
+# Dépendances pour le HA Manager Service (Version améliorée)
+# Version minimale recommandée
+
+# FastAPI et dépendances
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+
+# Pydantic pour la validation des données
+pydantic==2.12.5
+pydantic-settings==2.13.0
+
+# Clients HTTP
+httpx==0.28.1
+
+# Redis
+redis==5.2.0
+
+# MQTT
+aiomqtt==2.5.0
+
+# Gestion des variables d'environnement
+python-dotenv==1.0.0
+
+# Logging (inclus dans Python standard)
+# typing-extensions (inclus dans Python 3.13+)
+
+# Dépendances de développement (optionnelles)
+pytest==8.3.4
+pytest-asyncio==0.24.0
+black==24.10.0
+mypy==1.13.0

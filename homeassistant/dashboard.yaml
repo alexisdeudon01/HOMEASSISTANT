@@ -1,0 +1,110 @@
+# Dashboard Sinik Infrastructure Manager
+# Dashboard adapté avec routes ajodapter pour Home Assistant
+
+views:
+  - title: "Sinik Infrastructure"
+    icon: mdi:server
+    cards:
+      - type: entities
+        title: "État des Services"
+        show_header_toggle: false
+        entities:
+          - entity: sensor.sinik_infrastructure_status
+            name: "Statut Infrastructure"
+          - entity: binary_sensor.sinik_redis_status
+            name: "Redis"
+          - entity: binary_sensor.sinik_mqtt_status
+            name: "MQTT"
+          - entity: binary_sensor.sinik_ha_connection
+            name: "Home Assistant"
+
+      - type: entities
+        title: "Appareils Découverts"
+        show_header_toggle: false
+        entities:
+          - entity: sensor.sinik_devices_count
+            name: "Nombre d'appareils"
+          - entity: sensor.sinik_last_discovery
+            name: "Dernier scan"
+
+      - type: button
+        name: "Nettoyage Complet"
+        tap_action:
+          action: call-service
+          service: rest_command.sinik_clean_slate
+        icon: mdi:broom
+
+      - type: button
+        name: "Scanner Appareils"
+        tap_action:
+          action: call-service
+          service: rest_command.sinik_discover
+        icon: mdi:radar
+
+      - type: entities
+        title: "Commandes Rapides"
+        show_header_toggle: false
+        entities:
+          - type: input_text
+            name: "ID Appareil"
+            icon: mdi:identifier
+          - type: input_text
+            name: "Action"
+            icon: mdi:play
+          - type: input_text
+            name: "Paramètres (JSON)"
+            icon: mdi:code-json
+            multiline: true
+
+      - type: button
+        name: "Envoyer Commande"
+        tap_action:
+          action: call-service
+          service: rest_command.sinik_send_command
+          service_data:
+            device_id: "{{ states('input_text.id_appareil') }}"
+            action: "{{ states('input_text.action') }}"
+            params: "{{ states('input_text.param_tres_json') }}"
+        icon: mdi:send
+
+      - type: markdown
+        title: "Informations API"
+        content: |
+          ## Routes API disponibles
+          
+          **GET** `/health` - État de santé  
+          **GET** `/devices` - Liste des appareils  
+          **GET** `/status/{id}` - Statut d'un appareil  
+          **POST** `/command` - Envoyer une commande  
+          **POST** `/clean` - Nettoyage complet  
+          **POST** `/discover` - Scanner les appareils
+          
+          **URL:** http://localhost:8082
+
+  - title: "Appareils Sinik"
+    icon: mdi:devices
+    cards:
+      - type: entity-filter
+        entities:
+          - entity: light.*
+          - entity: switch.*
+          - entity: sensor.*
+          - entity: binary_sensor.*
+          - entity: media_player.*
+        state_filter:
+          - operator: regex
+            attribute: entity_id
+            value: ".*sinik.*"
+        card:
+          type: entities
+          title: "Appareils Sinik"
+
+      - type: markdown
+        title: "Statistiques"
+        content: |
+          ## Métriques en temps réel
+          
+          - **Appareils découverts:** {{ states('sensor.sinik_devices_count') }}
+          - **Redis connecté:** {{ states('binary_sensor.sinik_redis_status') }}
+          - **MQTT connecté:** {{ states('binary_sensor.sinik_mqtt_status') }}
+          - **Dernière mise à jour:** {{ states('sensor.sinik_last_update') }}

@@ -1,0 +1,130 @@
+homeassistant:
+  name: SINIK Home
+  unit_system: metric
+  currency: EUR
+  country: LU
+  time_zone: Europe/Luxembourg
+  latitude: 49.6117
+  longitude: 6.1319
+
+default_config:
+
+# Disable Bluetooth
+bluetooth:
+
+logger:
+  default: warning
+  logs:
+    homeassistant.components.mqtt: info
+    habluetooth: error
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 127.0.0.1
+    - 192.168.178.0/24
+    - 172.16.0.0/12
+    - 10.0.0.0/8
+  ip_ban_enabled: true
+  login_attempts_threshold: 5
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+# Dashboard Sinik Infrastructure Manager
+lovelace:
+  mode: yaml
+  dashboards:
+    sinik-infrastructure:
+      mode: yaml
+      title: "Sinik Infrastructure"
+      icon: mdi:server
+      show_in_sidebar: true
+      filename: dashboard.yaml
+
+# Configuration MQTT pour Sinik
+mqtt:
+  broker: 127.0.0.1
+  port: 1883
+  discovery: true
+  discovery_prefix: homeassistant
+  statestream:
+    base_topic: sinik/ha_export
+    publish_attributes: true
+    publish_timestamps: true
+
+# Commandes REST pour Sinik Infrastructure Manager
+rest_command:
+  sinik_clean_slate:
+    url: "http://localhost:8082/clean"
+    method: POST
+    content_type: "application/json"
+    
+  sinik_discover:
+    url: "http://localhost:8082/discover"
+    method: POST
+    content_type: "application/json"
+    
+  sinik_send_command:
+    url: "http://localhost:8082/command?device_id={{ device_id }}&action={{ action }}"
+    method: POST
+    content_type: "application/json"
+    payload: '{{ params | default("{}") }}'
+
+# Capteurs pour Sinik Infrastructure Manager
+sensor:
+  - platform: rest
+    name: "Sinik Infrastructure Status"
+    resource: "http://localhost:8082/health"
+    value_template: "{{ value_json.status }}"
+    json_attributes:
+      - redis
+      - mqtt
+    scan_interval: 60
+    
+  - platform: rest
+    name: "Sinik Devices Count"
+    resource: "http://localhost:8082/devices"
+    value_template: "{{ value_json.count }}"
+    json_attributes:
+      - devices
+    scan_interval: 120
+    
+  - platform: template
+    sensors:
+      sinik_last_discovery:
+        friendly_name: "Dernier scan Sinik"
+        value_template: "{{ now().strftime('%H:%M') }}"
+        
+      sinik_last_update:
+        friendly_name: "Dernière mise à jour"
+        value_template: "{{ now().strftime('%H:%M:%S') }}"
+
+binary_sensor:
+  - platform: template
+    sensors:
+      sinik_redis_status:
+        friendly_name: "Redis Status"
+        value_template: "{{ states('sensor.sinik_infrastructure_status') == 'healthy' and state_attr('sensor.sinik_infrastructure_status', 'redis') == true }}"
+        
+      sinik_mqtt_status:
+        friendly_name: "MQTT Status"
+        value_template: "{{ states('sensor.sinik_infrastructure_status') == 'healthy' and state_attr('sensor.sinik_infrastructure_status', 'mqtt') == true }}"
+        
+      sinik_ha_connection:
+        friendly_name: "HA Connection"
+        value_template: "{{ states('sensor.sinik_infrastructure_status') == 'healthy' }}"
+
+input_text:
+  id_appareil:
+    name: "ID Appareil"
+    initial: ""
+    
+  action:
+    name: "Action"
+    initial: ""
+    
+  param_tres_json:
+    name: "Paramètres JSON"
+    initial: "{}"

@@ -1,0 +1,147 @@
+services:
+  redis:
+    image: redis:alpine
+    container_name: sinik-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./.env:/app/.env:ro
+    command: redis-server --appendonly yes --save 60 1
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: sinik-mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+      - ./mosquitto/config:/mosquitto/config
+      - ./.env:/app/.env:ro
+
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: sinik-homeassistant
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - TZ=Europe/Luxembourg
+    depends_on:
+      - mosquitto
+      - redis
+
+  sensor:
+    build: ./sensor
+    container_name: sinik-sensor
+    restart: unless-stopped
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./.env:/app/.env:ro
+      - ./scripts/export-env.sh:/app/export-env.sh:ro
+    env_file:
+      - common.env
+    environment:
+      - INTERFACE=${INTERFACE:-eth0}
+      - LOCAL_NETWORK=${LOCAL_NETWORK}
+    depends_on:
+      - redis
+
+  brain:
+    build: ./brain
+    container_name: sinik-brain
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./.env:/app/.env:ro
+      - ./scripts/export-env.sh:/app/export-env.sh:ro
+    env_file:
+      - common.env
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - HUE_BRIDGE_IP=${HUE_BRIDGE_IP}
+      - HUE_API_KEY=${HUE_API_KEY}
+    depends_on:
+      - redis
+      - mosquitto
+
+  gateway:
+    build: ./gateway
+    container_name: sinik-gateway
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./.env:/app/.env:ro
+      - ./scripts/export-env.sh:/app/export-env.sh:ro
+    env_file:
+      - common.env
+    environment:
+      - HUE_BRIDGE_IP=${HUE_BRIDGE_IP}
+      - HUE_API_KEY=${HUE_API_KEY}
+      - HA_TOKEN=${HA_TOKEN}
+    depends_on:
+      - redis
+      - mosquitto
+
+  reconciler:
+    build: ./reconciler
+    container_name: sinik-reconciler
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./.env:/app/.env:ro
+      - ./scripts/export-env.sh:/app/export-env.sh:ro
+      - /home/pi/homeassistant:/ha_config:ro
+    env_file:
+      - common.env
+    environment:
+      - CHECK_INTERVAL=1200
+      - LOCAL_NETWORK=${LOCAL_NETWORK}
+      - HUE_BRIDGE_IP=${HUE_BRIDGE_IP}
+      - HUE_API_KEY=${HUE_API_KEY}
+      - HA_TOKEN=${HA_TOKEN}
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
+      - MY_PHONE_NUMBER=${MY_PHONE_NUMBER}
+    depends_on:
+      - redis
+
+  infrastructure-manager:
+    build: ./infrastructure-manager
+    container_name: sinik-infrastructure-manager
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./.env:/app/.env:ro
+      - ./scripts/export-env.sh:/app/export-env.sh:ro
+    env_file:
+      - common.env
+    environment:
+      - HA_URL=http://homeassistant:8123
+      - HA_TOKEN=${HA_TOKEN}
+      - AI_API_KEY=${AI_API_KEY:-}
+      - HACS_TOKEN=${HACS_TOKEN:-}
+    depends_on:
+      - redis
+      - mosquitto
+      - homeassistant
+
+volumes:
+  redis_data:
+  mosquitto_data:
+  mosquitto_log:

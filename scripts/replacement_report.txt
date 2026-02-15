@@ -1,0 +1,4 @@
+Rapport de remplacement des valeurs hardcodées
+Date: Sun 15 Feb 17:52:36 CET 2026
+Fichiers modifiés: 13
+Changements effectués: 69

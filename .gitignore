@@ -1,0 +1,77 @@
+# Fichiers d'environnement
+.env
+*.env
+.env.local
+.env.development
+.env.production
+
+# Environnements virtuels Python
+venv/
+env/
+ENV/
+.venv/
+virtualenv/
+
+# Fichiers de cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Système d'exploitation
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Fichiers temporaires
+tmp/
+temp/
+
+# Fichiers de données
+*.db
+*.sqlite
+*.sqlite3
+
+# Fichiers de sauvegarde
+*.bak
+*.backup
+
+# Fichiers de configuration spécifiques au projet
+config/local.yaml
+config/development.yaml
+
+# Fichiers de build
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+.mypy_cache/

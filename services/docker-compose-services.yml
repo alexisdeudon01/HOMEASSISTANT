@@ -1,0 +1,194 @@
+version: '3.8'
+
+services:
+  # Services Principaux
+  
+  gateway-service:
+    build: ./gateway-service
+    container_name: sinik-gateway-service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ../common.env
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MQTT_BROKER=mosquitto
+      - MQTT_PORT=1883
+      - GATEWAY_HOST=0.0.0.0
+      - GATEWAY_PORT=8000
+      - LOG_LEVEL=INFO
+    depends_on:
+      - redis
+      - mosquitto
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  ha-manager-service:
+    build: ./ha-manager-service
+    container_name: sinik-ha-manager-service
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    env_file:
+      - ../common.env
+    environment:
+      - HA_URL=http://homeassistant:8123
+      - HA_TOKEN=${HA_TOKEN}
+      - REDIS_URL=redis://redis:6379
+      - SERVICE_HOST=0.0.0.0
+      - SERVICE_PORT=8001
+      - LOG_LEVEL=INFO
+    depends_on:
+      - redis
+      - homeassistant
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  brain-service:
+    build: ./brain-service
+    container_name: sinik-brain-service
+    restart: unless-stopped
+    env_file:
+      - ../common.env
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - HUE_BRIDGE_IP=${HUE_BRIDGE_IP}
+      - HUE_API_KEY=${HUE_API_KEY}
+      - LOG_LEVEL=INFO
+    depends_on:
+      - redis
+      - mosquitto
+    healthcheck:
+      test: ["CMD", "redis-cli", "-h", "redis", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Services de Support
+  
+  entity-service:
+    build: ./entity-service
+    container_name: sinik-entity-service
+    restart: unless-stopped
+    ports:
+      - "8002:8002"
+    env_file:
+      - ../common.env
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - SERVICE_HOST=0.0.0.0
+      - SERVICE_PORT=8002
+      - LOG_LEVEL=INFO
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  protocol-service:
+    build: ./protocol-service
+    container_name: sinik-protocol-service
+    restart: unless-stopped
+    ports:
+      - "8003:8003"
+    env_file:
+      - ../common.env
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MQTT_BROKER=mosquitto
+      - MQTT_PORT=1883
+      - SERVICE_HOST=0.0.0.0
+      - SERVICE_PORT=8003
+      - LOG_LEVEL=INFO
+    depends_on:
+      - redis
+      - mosquitto
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Infrastructure de Base
+  
+  redis:
+    image: redis:7-alpine
+    container_name: sinik-services-redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --save 60 1
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: sinik-services-mosquitto
+    restart: unless-stopped
+    ports:
+      - "1884:1883"
+      - "9002:9001"
+    volumes:
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+      - ./mosquitto/config:/mosquitto/config
+    healthcheck:
+      test: ["CMD", "mosquitto_pub", "-h", "localhost", "-p", "1883", "-t", "$$SYS/broker/uptime", "-m", "test"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: sinik-services-homeassistant
+    restart: unless-stopped
+    ports:
+      - "8124:8123"
+    volumes:
+      - homeassistant_data:/config
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - TZ=Europe/Luxembourg
+    depends_on:
+      - mosquitto
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8123/api/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  redis_data:
+  mosquitto_data:
+  mosquitto_log:
+  homeassistant_data:
+
+networks:
+  default:
+    name: sinik-services-network
+    driver: bridge

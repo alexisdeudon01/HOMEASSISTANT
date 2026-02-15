@@ -1,0 +1,254 @@
+================================================================================
+RAPPORT DES VALEURS HARDCODÉES
+================================================================================
+
+Fichiers analysés: 12
+Valeurs hardcodées trouvées: 50
+
+
+============================================================
+Fichier: /home/pi/last/sinik-os-full/protocols/mqtt.py
+============================================================
+  Ligne 54: 1883
+    → Remplacer par: os.getenv('MQTT_PORT')
+    Code: port: int = 1883,...
+
+  Ligne 172: 1883
+    → Remplacer par: os.getenv('MQTT_PORT')
+    Code: port: int = 1883,...
+
+
+============================================================
+Fichier: /home/pi/last/sinik-os-full/scripts/find_hardcoded.py
+============================================================
+  Ligne 16: 6379
+    → Remplacer par: os.getenv('REDIS_PORT')
+    Code: (r'\b(6379|1883|8123|8080|8082|9001)\b', 'PORT'),...
+
+  Ligne 16: 1883
+    → Remplacer par: os.getenv('MQTT_PORT')
+    Code: (r'\b(6379|1883|8123|8080|8082|9001)\b', 'PORT'),...
+
+  Ligne 16: 8123
+    → Remplacer par: os.getenv('HA_PORT')
+    Code: (r'\b(6379|1883|8123|8080|8082|9001)\b', 'PORT'),...
+
+  Ligne 16: 8080
+    → Remplacer par: os.getenv('GATEWAY_PORT')
+    Code: (r'\b(6379|1883|8123|8080|8082|9001)\b', 'PORT'),...
+
+  Ligne 16: 8082
+    → Remplacer par: os.getenv('MANAGER_PORT')
+    Code: (r'\b(6379|1883|8123|8080|8082|9001)\b', 'PORT'),...
+
+  Ligne 27: 192.168.178.69
+    → Remplacer par: os.getenv('HUE_BRIDGE_IP')
+    Code: '192.168.178.69': 'HUE_BRIDGE_IP',...
+
+  Ligne 28: 127.0.0.1
+    → Remplacer par: os.getenv('REDIS_HOST')
+    Code: '127.0.0.1': 'REDIS_HOST',...
+
+  Ligne 29: 6379
+    → Remplacer par: os.getenv('REDIS_PORT')
+    Code: '6379': 'REDIS_PORT',...
+
+  Ligne 30: 1883
+    → Remplacer par: os.getenv('MQTT_PORT')
+    Code: '1883': 'MQTT_PORT',...
+
+  Ligne 31: 8123
+    → Remplacer par: os.getenv('HA_PORT')
+    Code: '8123': 'HA_PORT',...
+
+  Ligne 32: 8080
+    → Remplacer par: os.getenv('GATEWAY_PORT')
+    Code: '8080': 'GATEWAY_PORT',...
+
+  Ligne 33: 8082
+    → Remplacer par: os.getenv('MANAGER_PORT')
+    Code: '8082': 'MANAGER_PORT',...
+
+  Ligne 34: tNZIBriUkfuBz7jvE1v9CtzrtmsdumDOgsVQI554
+    → Remplacer par: os.getenv('HUE_API_KEY')
+    Code: 'tNZIBriUkfuBz7jvE1v9CtzrtmsdumDOgsVQI554': 'HUE_API_KEY',...
+
+  Ligne 35: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI2ZGI5YWI4NmRiNmY0N2VhYjlhOTY2ZDEwMzBhNjRiNSIsImlhdCI6MTc3MTExNTcyMCwiZXhwIjoyMDg2NDc1NzIwfQ.pr3Yn6kBqTiamGH03I10R9EzK7x-uk4rpP1JXanRsVE
+    → Remplacer par: os.getenv('HA_TOKEN')
+    Code: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI2ZGI5YWI4NmRiNmY0N2VhYjlhOTY2ZD...
+
+  Ligne 36: 127.0.0.1
+    → Remplacer par: os.getenv('REDIS_HOST')
+    Code: 'http://127.0.0.1:8123': 'HA_URL',...
+
+  Ligne 36: 8123
+    → Remplacer par: os.getenv('HA_PORT')
+    Code: 'http://127.0.0.1:8123': 'HA_URL',...
+
+  Ligne 36: http://127.0.0.1:8123
+    → Remplacer par: os.getenv('HA_URL')
+    Code: 'http://127.0.0.1:8123': 'HA_URL',...
+
+  Ligne 37: http://localhost:8000
+    → Remplacer par: os.getenv('ENTHROPIC_BASE_URL')
+    Code: 'http://localhost:8000': 'ENTHROPIC_BASE_URL',...
+
+
+============================================================
+Fichier: /home/pi/last/sinik-os-full/enthropic/decision_engine.py
+============================================================
+  Ligne 41: http://localhost:8000
+    → Remplacer par: os.getenv('ENTHROPIC_BASE_URL')
+    Code: def __init__(self, api_key: Optional[str] = None, base_url: str = "http://localh...
+
+
+============================================================
+Fichier: /home/pi/last/sinik-os-full/enthropic/ai_service.py
+============================================================
+  Ligne 114: http://localhost:8000
+    → Remplacer par: os.getenv('ENTHROPIC_BASE_URL')
+    Code: def __init__(self, api_key: Optional[str] = None, base_url: str = "http://localh...
+
+
+============================================================
+Fichier: /home/pi/last/sinik-os-full/entities/topic_entity.py
+============================================================
+  Ligne 129: multi_level_matching (API_KEY)
+    → À ajouter au fichier .env
+    Code: caps.append("multi_level_matching")...
+
+
+============================================================
+Fichier: /home/pi/last/sinik-os-full/services/brain-service/brain.py
+============================================================
+  Ligne 8: 127.0.0.1
+    → Remplacer par: os.getenv('REDIS_HOST')
+    Code: REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")...
+
+  Ligne 9: 6379
+    → Remplacer par: os.getenv('REDIS_PORT')
+    Code: REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))...
+
+  Ligne 11: 192.168.178.69
+    → Remplacer par: os.getenv('HUE_BRIDGE_IP')
+    Code: HUE_BRIDGE_IP = os.getenv("HUE_BRIDGE_IP", "192.168.178.69")...
+
+  Ligne 12: tNZIBriUkfuBz7jvE1v9CtzrtmsdumDOgsVQI554
+    → Remplacer par: os.getenv('HUE_API_KEY')
+    Code: HUE_API_KEY = os.getenv("HUE_API_KEY", "") or "tNZIBriUkfuBz7jvE1v9CtzrtmsdumDOg...
+
+  Ligne 73: claude-sonnet-4-20250514 (API_KEY)
+    → À ajouter au fichier .env
+    Code: model="claude-sonnet-4-20250514",...
+
+
+============================================================
+Fichier: /home/pi/last/sinik-os-full/services/gateway-service/main.py
+============================================================
+  Ligne 96: 8080
+    → Remplacer par: os.getenv('GATEWAY_PORT')
+    Code: ws_protocol = WebSocketProtocol("ws://localhost:8080/ws")...
+
+  Ligne 364: 0.0.0.0 (IP_ADDRESS)
+    → À ajouter au fichier .env
+    Code: uvicorn.run(app, host="0.0.0.0", port=8000)...
+
+
+============================================================
+Fichier: /home/pi/last/sinik-os-full/services/ha-manager-service/main_refactored.py
+============================================================
+  Ligne 49: 8123
+    → Remplacer par: os.getenv('HA_PORT')
+    Code: HA_URL = "http://homeassistant:8123"...
+
+  Ligne 50: your_long_lived_access_token (API_KEY)
+    → À ajouter au fichier .env
+    Code: HA_TOKEN = "your_long_lived_access_token"...
+
+  Ligne 346: 0.0.0.0 (IP_ADDRESS)
+    → À ajouter au fichier .env
+    Code: uvicorn.run(app, host="0.0.0.0", port=8001)...
+
+
+============================================================
+Fichier: /home/pi/last/sinik-os-full/services/ha-manager-service/main_improved.py
+============================================================
+  Ligne 55: 8123
+    → Remplacer par: os.getenv('HA_PORT')
+    Code: ha_url: str = "http://homeassistant:8123"...
+
+  Ligne 56: dummy_token_for_testing (API_KEY)
+    → À ajouter au fichier .env
+    Code: ha_token: SecretStr = SecretStr("dummy_token_for_testing")...
+
+  Ligne 59: 6379
+    → Remplacer par: os.getenv('REDIS_PORT')
+    Code: redis_url: str = "redis://redis:6379"...
+
+  Ligne 63: 1883
+    → Remplacer par: os.getenv('MQTT_PORT')
+    Code: mqtt_port: int = 1883...
+
+  Ligne 68: 0.0.0.0 (IP_ADDRESS)
+    → À ajouter au fichier .env
+    Code: service_host: str = "0.0.0.0"...
+
+
+============================================================
+Fichier: /home/pi/last/sinik-os-full/services/ha-manager-service/main.py
+============================================================
+  Ligne 94: 8123
+    → Remplacer par: os.getenv('HA_PORT')
+    Code: HA_URL = "http://homeassistant:8123"...
+
+  Ligne 95: your_long_lived_access_token (API_KEY)
+    → À ajouter au fichier .env
+    Code: HA_TOKEN = "your_long_lived_access_token"...
+
+  Ligne 96: 6379
+    → Remplacer par: os.getenv('REDIS_PORT')
+    Code: REDIS_URL = "redis://redis:6379"...
+
+  Ligne 98: 1883
+    → Remplacer par: os.getenv('MQTT_PORT')
+    Code: MQTT_PORT = 1883...
+
+  Ligne 477: total_connections_received (API_KEY)
+    → À ajouter au fichier .env
+    Code: "total_connections_received": info.get("total_connections_received"),...
+
+  Ligne 477: total_connections_received (API_KEY)
+    → À ajouter au fichier .env
+    Code: "total_connections_received": info.get("total_connections_received"),...
+
+  Ligne 478: total_commands_processed (API_KEY)
+    → À ajouter au fichier .env
+    Code: "total_commands_processed": info.get("total_commands_processed"),...
+
+  Ligne 478: total_commands_processed (API_KEY)
+    → À ajouter au fichier .env
+    Code: "total_commands_processed": info.get("total_commands_processed"),...
+
+  Ligne 491: 0.0.0.0 (IP_ADDRESS)
+    → À ajouter au fichier .env
+    Code: uvicorn.run(app, host="0.0.0.0", port=8001)...
+
+
+============================================================
+Fichier: /home/pi/last/sinik-os-full/services/gateway-service/protocols/mqtt.py
+============================================================
+  Ligne 54: 1883
+    → Remplacer par: os.getenv('MQTT_PORT')
+    Code: port: int = 1883,...
+
+  Ligne 172: 1883
+    → Remplacer par: os.getenv('MQTT_PORT')
+    Code: port: int = 1883,...
+
+
+============================================================
+Fichier: /home/pi/last/sinik-os-full/services/gateway-service/entities/topic_entity.py
+============================================================
+  Ligne 129: multi_level_matching (API_KEY)
+    → À ajouter au fichier .env
+    Code: caps.append("multi_level_matching")...
