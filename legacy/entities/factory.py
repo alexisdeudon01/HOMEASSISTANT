@@ -5,6 +5,7 @@ Ce module implémente un pattern Factory pour créer des entités
 basées sur leur type ou domaine.
 """
 
+import os
 from typing import Dict, Any, Optional, Type
 import logging
 from entities.models import Device, BaseEntity
@@ -262,13 +263,13 @@ class EntityFactory:
                 index="temperature"
             )
             temp_entity = cls.create_entity(
-                entity_type='sensor',
+                entity_type=os.getenv("entity_type", "sensor"),
                 entity_id=temp_entity_id,
                 name=f"{device.name} Temperature",
                 device=device,
-                device_class='temperature',
-                unit_of_measurement='°C',
-                state_class='measurement'
+                device_class=os.getenv("device_class", "temperature"),
+                unit_of_measurement=os.getenv("unit_of_measurement", "°C"),
+                state_class=os.getenv("state_class", "measurement")
             )
             entities.append(temp_entity)
         
@@ -279,13 +280,13 @@ class EntityFactory:
                 index="humidity"
             )
             humidity_entity = cls.create_entity(
-                entity_type='sensor',
+                entity_type=os.getenv("entity_type", "sensor"),
                 entity_id=humidity_entity_id,
                 name=f"{device.name} Humidity",
                 device=device,
-                device_class='humidity',
-                unit_of_measurement='%',
-                state_class='measurement'
+                device_class=os.getenv("device_class", "humidity"),
+                unit_of_measurement=os.getenv("unit_of_measurement", "%"),
+                state_class=os.getenv("state_class", "measurement")
             )
             entities.append(humidity_entity)
         

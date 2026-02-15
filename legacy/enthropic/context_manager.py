@@ -6,6 +6,7 @@ incluant les informations environnementales, les préférences,
 et l'historique des actions.
 """
 
+import os
 import json
 import logging
 from typing import Dict, Any, Optional, List, cast
@@ -43,12 +44,12 @@ class ContextManager:
         
         # Sources de contexte
         self.sources = [
-            ContextSource(name="user_profile", priority=1, cache_ttl=3600),
-            ContextSource(name="device_states", priority=2, cache_ttl=30),
-            ContextSource(name="environment", priority=3, cache_ttl=300),
-            ContextSource(name="weather", priority=4, cache_ttl=1800),
-            ContextSource(name="time", priority=5, cache_ttl=60),
-            ContextSource(name="history", priority=6, cache_ttl=900),
+cache_ttl = os.getenv("cache_ttl", "3600")
+cache_ttl = os.getenv("cache_ttl", "30")
+cache_ttl = os.getenv("cache_ttl", "300")
+cache_ttl = os.getenv("cache_ttl", "1800")
+cache_ttl = os.getenv("cache_ttl", "60")
+cache_ttl = os.getenv("cache_ttl", "900")
         ]
         
         # Cache local
@@ -252,13 +253,13 @@ class ContextManager:
         
         # Détermination du moment de la journée
         if current_hour < 6:
-            time_of_day = "night"
+time_of_day = os.getenv("time_of_day", "night")
         elif current_hour < 12:
-            time_of_day = "morning"
+time_of_day = os.getenv("time_of_day", "morning")
         elif current_hour < 18:
-            time_of_day = "afternoon"
+time_of_day = os.getenv("time_of_day", "afternoon")
         else:
-            time_of_day = "evening"
+time_of_day = os.getenv("time_of_day", "evening")
         
         return {
             "time_of_day": time_of_day,

@@ -5,6 +5,7 @@ Ce module fournit un client HTTP asynchrone pour appeler les APIs
 des autres services de l'architecture Sinik OS.
 """
 
+import os
 import asyncio
 import logging
 from typing import Dict, Any, Optional, List
@@ -74,7 +75,7 @@ class GatewayServiceClient(ServiceHTTPClient):
     """Client pour le Gateway Service (port 8000)."""
     
     def __init__(self):
-        super().__init__(base_url="http://gateway-service:8000")
+base_url = os.getenv("base_url", "http://gateway-service:8000")
         
     async def get_devices(self) -> List[Dict[str, Any]]:
         """Récupérer la liste des devices depuis le Gateway Service."""
@@ -99,7 +100,7 @@ class EntityServiceClient(ServiceHTTPClient):
     """Client pour l'Entity Service (port 8002)."""
     
     def __init__(self):
-        super().__init__(base_url="http://entity-service:8002")
+base_url = os.getenv("base_url", "http://entity-service:8002")
         
     async def get_entities(self) -> List[Dict[str, Any]]:
         """Récupérer la liste des entités."""
@@ -124,7 +125,7 @@ class ProtocolServiceClient(ServiceHTTPClient):
     """Client pour le Protocol Service (port 8003)."""
     
     def __init__(self):
-        super().__init__(base_url="http://protocol-service:8003")
+base_url = os.getenv("base_url", "http://protocol-service:8003")
         
     async def get_protocols(self) -> List[Dict[str, Any]]:
         """Récupérer la liste des protocoles supportés."""
@@ -141,7 +142,7 @@ class BrainServiceClient(ServiceHTTPClient):
     """Client pour le Brain Service."""
     
     def __init__(self):
-        super().__init__(base_url="http://brain-service:8004")
+base_url = os.getenv("base_url", "http://brain-service:8004")
         
     async def process_intent(self, intent: str, context: Dict[str, Any]) -> Dict[str, Any]:
         """Traiter une intention avec le service d'IA."""

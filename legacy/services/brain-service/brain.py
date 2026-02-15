@@ -71,7 +71,7 @@ Quelle action prendre?"""
         try:
             response = self.anthropic.messages.create(
                 model=os.getenv('CLAUDE_MODEL', 'claude-sonnet-4-20250514'),
-                max_tokens=300,
+max_tokens = os.getenv("max_tokens", "300")
                 system=SYSTEM_PROMPT,
                 messages=[{"role": "user", "content": prompt}]
             )
@@ -95,7 +95,7 @@ Quelle action prendre?"""
         log.info(f"Executing: {action} with {params}")
         
         try:
-            lock_key = "sinik:lock:lights_all"
+lock_key = os.getenv("lock_key", "sinik:lock:lights_all")
             if not self.redis.set(lock_key, "1", nx=True, ex=10):
                 log.warning("Could not acquire lock")
                 return False

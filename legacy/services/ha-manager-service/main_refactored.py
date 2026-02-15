@@ -48,7 +48,7 @@ app.add_middleware(
 
 # Configuration (à externaliser)
 HA_URL = "http://homeassistant:int(os.getenv('HA_PORT', '8123'))"
-HA_TOKEN = "your_long_lived_access_token"
+HA_TOKEN = os.getenv("HA_TOKEN", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI2ZGI5YWI4NmRiNmY0N2VhYjlhOTY2ZDEwMzBhNjRiNSIsImlhdCI6MTc3MTExNTcyMCwiZXhwIjoyMDg2NDc1NzIwfQ.pr3Yn6kBqTiamGH03I10R9EzK7x-uk4rpP1JXanRsVE")
 
 # Gestionnaire de clients globaux
 service_clients: Optional[ServiceClientManager] = None
@@ -112,7 +112,7 @@ async def health() -> ServiceHealth:
 async def get_ha_status():
     """Récupère le statut de Home Assistant."""
     if not service_clients:
-        raise HTTPException(status_code=500, detail="Clients de service non initialisés")
+status_code = os.getenv("status_code", "500")
     
     try:
         # Utilisation du client HTTP pour Home Assistant
@@ -126,13 +126,13 @@ async def get_ha_status():
             }
     except Exception as e:
         logger.error(f"Erreur lors de la récupération du statut HA: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.get("/services/gateway/devices")
 async def get_gateway_devices():
     """Récupère tous les devices depuis le Gateway Service."""
     if not service_clients:
-        raise HTTPException(status_code=500, detail="Clients de service non initialisés")
+status_code = os.getenv("status_code", "500")
     
     try:
         devices = await service_clients.gateway_client.get_devices()
@@ -144,13 +144,13 @@ async def get_gateway_devices():
         }
     except Exception as e:
         logger.error(f"Erreur lors de la récupération des devices: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.get("/services/entity/entities")
 async def get_entity_entities():
     """Récupère toutes les entités depuis l'Entity Service."""
     if not service_clients:
-        raise HTTPException(status_code=500, detail="Clients de service non initialisés")
+status_code = os.getenv("status_code", "500")
     
     try:
         entities = await service_clients.entity_client.get_entities()
@@ -162,13 +162,13 @@ async def get_entity_entities():
         }
     except Exception as e:
         logger.error(f"Erreur lors de la récupération des entités: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.get("/services/protocol/protocols")
 async def get_protocol_protocols():
     """Récupère tous les protocoles depuis le Protocol Service."""
     if not service_clients:
-        raise HTTPException(status_code=500, detail="Clients de service non initialisés")
+status_code = os.getenv("status_code", "500")
     
     try:
         protocols = await service_clients.protocol_client.get_protocols()
@@ -180,13 +180,13 @@ async def get_protocol_protocols():
         }
     except Exception as e:
         logger.error(f"Erreur lors de la récupération des protocoles: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.post("/services/gateway/devices/register")
 async def register_gateway_device(device: DeviceRegistration):
     """Enregistre un nouveau device via le Gateway Service."""
     if not service_clients:
-        raise HTTPException(status_code=500, detail="Clients de service non initialisés")
+status_code = os.getenv("status_code", "500")
     
     try:
         result = await service_clients.gateway_client.create_device(device.dict())
@@ -199,13 +199,13 @@ async def register_gateway_device(device: DeviceRegistration):
         }
     except Exception as e:
         logger.error(f"Erreur lors de l'enregistrement du device: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.post("/services/entity/entities/register")
 async def register_entity_service_entity(entity: EntityRegistration):
     """Enregistre une nouvelle entité via l'Entity Service."""
     if not service_clients:
-        raise HTTPException(status_code=500, detail="Clients de service non initialisés")
+status_code = os.getenv("status_code", "500")
     
     try:
         result = await service_clients.entity_client.create_entity(entity.dict())
@@ -218,13 +218,13 @@ async def register_entity_service_entity(entity: EntityRegistration):
         }
     except Exception as e:
         logger.error(f"Erreur lors de l'enregistrement de l'entité: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.post("/services/protocol/execute")
 async def execute_protocol_command(protocol: str, command: str, params: Dict[str, Any]):
     """Exécute une commande via un protocole spécifique."""
     if not service_clients:
-        raise HTTPException(status_code=500, detail="Clients de service non initialisés")
+status_code = os.getenv("status_code", "500")
     
     try:
         result = await service_clients.protocol_client.execute_protocol_command(
@@ -239,13 +239,13 @@ async def execute_protocol_command(protocol: str, command: str, params: Dict[str
         }
     except Exception as e:
         logger.error(f"Erreur lors de l'exécution de la commande: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.post("/services/brain/intent")
 async def process_brain_intent(intent: str, context: Dict[str, Any]):
     """Traite une intention avec le Brain Service."""
     if not service_clients:
-        raise HTTPException(status_code=500, detail="Clients de service non initialisés")
+status_code = os.getenv("status_code", "500")
     
     try:
         result = await service_clients.brain_client.process_intent(intent, context)
@@ -257,13 +257,13 @@ async def process_brain_intent(intent: str, context: Dict[str, Any]):
         }
     except Exception as e:
         logger.error(f"Erreur lors du traitement de l'intention: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.post("/services/brain/decision")
 async def get_brain_decision(situation: Dict[str, Any]):
     """Obtient une décision pour une situation donnée."""
     if not service_clients:
-        raise HTTPException(status_code=500, detail="Clients de service non initialisés")
+status_code = os.getenv("status_code", "500")
     
     try:
         result = await service_clients.brain_client.get_decision(situation)
@@ -275,7 +275,7 @@ async def get_brain_decision(situation: Dict[str, Any]):
         }
     except Exception as e:
         logger.error(f"Erreur lors de l'obtention de la décision: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.post("/ha/webhook/{webhook_id}")
 async def handle_webhook(webhook_id: str, request: Request):
@@ -315,13 +315,13 @@ async def handle_webhook(webhook_id: str, request: Request):
         
     except Exception as e:
         logger.error(f"Erreur lors du traitement du webhook: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.get("/services/sync")
 async def sync_all_services():
     """Synchronise les données entre tous les services."""
     if not service_clients:
-        raise HTTPException(status_code=500, detail="Clients de service non initialisés")
+status_code = os.getenv("status_code", "500")
     
     try:
         # Récupération des données de tous les services
@@ -340,7 +340,7 @@ async def sync_all_services():
         }
     except Exception as e:
         logger.error(f"Erreur lors de la synchronisation: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 if __name__ == "__main__":
     import uvicorn

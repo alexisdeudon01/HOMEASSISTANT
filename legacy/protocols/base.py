@@ -5,6 +5,7 @@ Ce module définit les interfaces et classes abstraites pour tous les protocoles
 Pattern Observer pour la notification des messages.
 """
 
+import os
 from abc import ABC, abstractmethod
 from typing import Dict, Any, List, Optional, Callable
 from dataclasses import dataclass, field
@@ -15,11 +16,11 @@ from enum import Enum
 
 class ProtocolState(Enum):
     """États possibles d'un protocole."""
-    DISCONNECTED = "disconnected"
-    CONNECTING = "connecting"
-    CONNECTED = "connected"
-    ERROR = "error"
-    RECONNECTING = "reconnecting"
+DISCONNECTED = os.getenv("DISCONNECTED", "disconnected")
+CONNECTING = os.getenv("CONNECTING", "connecting")
+CONNECTED = os.getenv("CONNECTED", "connected")
+ERROR = os.getenv("ERROR", "error")
+RECONNECTING = os.getenv("RECONNECTING", "reconnecting")
 
 
 @dataclass

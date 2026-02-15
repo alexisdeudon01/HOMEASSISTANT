@@ -71,8 +71,8 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     
     class Config:
-        env_file = ".env"
-        env_prefix = "ha_manager_"
+env_file = os.getenv("env_file", ".env")
+env_prefix = os.getenv("env_prefix", "ha_manager_")
 
 # Initialisation des settings
 settings = Settings()
@@ -182,8 +182,8 @@ class ClientManager:
             self.redis_client = redis.from_url(
                 settings.redis_url,
                 decode_responses=True,
-                socket_connect_timeout=5.0,
-                socket_timeout=5.0
+socket_connect_timeout = os.getenv("socket_connect_timeout", "5")
+socket_timeout = os.getenv("socket_timeout", "5")
             )
             await self.redis_client.ping()
             logger.info("Client Redis initialisé avec succès")

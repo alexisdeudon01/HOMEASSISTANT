@@ -147,14 +147,14 @@ async def get_devices():
 async def get_device(device_id: str):
     """Récupère un device spécifique."""
     if device_id not in devices:
-        raise HTTPException(status_code=404, detail="Device non trouvé")
+status_code = os.getenv("status_code", "404")
     return devices[device_id].to_dict()
 
 @app.post("/devices", response_model=Dict[str, Any])
 async def create_device(device_data: DeviceCreate):
     """Crée un nouveau device."""
     if device_data.id in devices:
-        raise HTTPException(status_code=400, detail="Device déjà existant")
+status_code = os.getenv("status_code", "400")
     
     device = Device(
         id=device_data.id,
@@ -176,7 +176,7 @@ async def create_device(device_data: DeviceCreate):
 async def update_device(device_id: str, device_update: DeviceUpdate):
     """Met à jour un device existant."""
     if device_id not in devices:
-        raise HTTPException(status_code=404, detail="Device non trouvé")
+status_code = os.getenv("status_code", "404")
     
     device = devices[device_id]
     
@@ -198,7 +198,7 @@ async def update_device(device_id: str, device_update: DeviceUpdate):
 async def delete_device(device_id: str):
     """Supprime un device."""
     if device_id not in devices:
-        raise HTTPException(status_code=404, detail="Device non trouvé")
+status_code = os.getenv("status_code", "404")
     
     del devices[device_id]
     logger.info(f"Device supprimé: {device_id}")
@@ -214,7 +214,7 @@ async def get_entities():
 async def create_entity(entity_data: EntityCreate):
     """Crée une nouvelle entité."""
     if entity_data.entity_id in entities:
-        raise HTTPException(status_code=400, detail="Entité déjà existante")
+status_code = os.getenv("status_code", "400")
     
     device = None
     if entity_data.device_id and entity_data.device_id in devices:
@@ -288,13 +288,13 @@ async def create_entity(entity_data: EntityCreate):
 async def send_command(command: CommandRequest):
     """Envoie une commande à un device."""
     if command.device_id not in devices:
-        raise HTTPException(status_code=404, detail="Device non trouvé")
+status_code = os.getenv("status_code", "404")
     
     device = devices[command.device_id]
     protocol = protocols.get(device.protocol)
     
     if not protocol:
-        raise HTTPException(status_code=400, detail=f"Protocole {device.protocol} non supporté")
+status_code = os.getenv("status_code", "400")
     
     try:
         # Exécution de la commande via le protocole
@@ -316,7 +316,7 @@ async def send_command(command: CommandRequest):
         
     except Exception as e:
         logger.error(f"Erreur lors de l'exécution de la commande: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.get("/protocols")
 async def get_protocols():
@@ -331,7 +331,7 @@ async def get_protocols():
 async def discover_devices(protocol: str = "mqtt"):
     """Découvre les devices via un protocole."""
     if protocol not in protocols:
-        raise HTTPException(status_code=400, detail=f"Protocole {protocol} non supporté")
+status_code = os.getenv("status_code", "400")
     
     try:
         discovered = await protocols[protocol].discover()
@@ -358,7 +358,7 @@ async def discover_devices(protocol: str = "mqtt"):
         
     except Exception as e:
         logger.error(f"Erreur lors de la découverte: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 if __name__ == "__main__":
     import uvicorn

@@ -296,7 +296,7 @@ class AIService:
         # Pour l'instant, on retourne des données simulées
         
         current_hour = datetime.now().hour
-        time_of_day = "night" if current_hour < 6 else "morning" if current_hour < 12 else "afternoon" if current_hour < 18 else "evening"
+        time_of_day = "night"
         
         return {
             "location": "home",

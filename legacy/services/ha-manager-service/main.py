@@ -93,9 +93,9 @@ class WebhookPayload(BaseModel):
 
 # Configuration (à externaliser)
 HA_URL = "http://homeassistant:int(os.getenv('HA_PORT', '8123'))"
-HA_TOKEN = "your_long_lived_access_token"
+HA_TOKEN = os.getenv("HA_TOKEN", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI2ZGI5YWI4NmRiNmY0N2VhYjlhOTY2ZDEwMzBhNjRiNSIsImlhdCI6MTc3MTExNTcyMCwiZXhwIjoyMDg2NDc1NzIwfQ.pr3Yn6kBqTiamGH03I10R9EzK7x-uk4rpP1JXanRsVE")
 REDIS_URL = "redis://redis:int(os.getenv('REDIS_PORT', '6379'))"
-MQTT_BROKER = "mosquitto"
+MQTT_BROKER = os.getenv("MQTT_BROKER", "mosquitto")
 MQTT_PORT = int(os.getenv('MQTT_PORT', '1883'))
 
 # Clients globaux
@@ -197,20 +197,20 @@ async def health():
 async def get_ha_status():
     """Récupère le statut de Home Assistant."""
     if not http_client:
-        raise HTTPException(status_code=500, detail="Client HTTP non initialisé")
+status_code = os.getenv("status_code", "500")
     
     try:
         response = await http_client.get("/api/")
         return response.json()
     except Exception as e:
         logger.error(f"Erreur lors de la récupération du statut HA: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.get("/ha/devices")
 async def get_ha_devices():
     """Récupère tous les devices de Home Assistant."""
     if not http_client:
-        raise HTTPException(status_code=500, detail="Client HTTP non initialisé")
+status_code = os.getenv("status_code", "500")
     
     try:
         response = await http_client.get("/api/devices")
@@ -235,13 +235,13 @@ async def get_ha_devices():
         }
     except Exception as e:
         logger.error(f"Erreur lors de la récupération des devices HA: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.get("/ha/entities")
 async def get_ha_entities():
     """Récupère toutes les entités de Home Assistant."""
     if not http_client:
-        raise HTTPException(status_code=500, detail="Client HTTP non initialisé")
+status_code = os.getenv("status_code", "500")
     
     try:
         response = await http_client.get("/api/states")
@@ -265,7 +265,7 @@ async def get_ha_entities():
         }
     except Exception as e:
         logger.error(f"Erreur lors de la récupération des entités HA: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.post("/ha/devices/register")
 async def register_device(device: DeviceRegistration):
@@ -321,7 +321,7 @@ async def register_device(device: DeviceRegistration):
         
     except Exception as e:
         logger.error(f"Erreur lors de l'enregistrement du device: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.post("/ha/entities/register")
 async def register_entity(entity: EntityRegistration):
@@ -381,7 +381,7 @@ async def register_entity(entity: EntityRegistration):
         
     except Exception as e:
         logger.error(f"Erreur lors de l'enregistrement de l'entité: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.post("/ha/webhook/{webhook_id}")
 async def handle_webhook(webhook_id: str, request: Request):
@@ -427,7 +427,7 @@ async def handle_webhook(webhook_id: str, request: Request):
         
     except Exception as e:
         logger.error(f"Erreur lors du traitement du webhook: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.post("/ha/entities/{entity_id}/state")
 async def update_entity_state(entity_id: str, state: Dict[str, Any]):
@@ -456,13 +456,13 @@ async def update_entity_state(entity_id: str, state: Dict[str, Any]):
         
     except Exception as e:
         logger.error(f"Erreur lors de la mise à jour de l'état: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 @app.get("/redis/stats")
 async def get_redis_stats():
     """Récupère les statistiques Redis."""
     if not redis_client:
-        raise HTTPException(status_code=500, detail="Client Redis non initialisé")
+status_code = os.getenv("status_code", "500")
     
     try:
         info = await redis_client.info()
@@ -485,7 +485,7 @@ async def get_redis_stats():
         
     except Exception as e:
         logger.error(f"Erreur lors de la récupération des stats Redis: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+status_code = os.getenv("status_code", "500")
 
 if __name__ == "__main__":
     import uvicorn
