@@ -1,0 +1,241 @@
+version: '3.8'
+
+services:
+  # Gateway Service - Entry point for all external requests
+  gateway:
+    build: ./microservices/gateway
+    container_name: sinik-gateway
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./microservices/gateway:/app
+      - ./shared:/app/shared
+      - ./config:/app/config
+      - ./.env:/app/.env:ro
+    environment:
+      - SERVICE_NAME=gateway
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    depends_on:
+      - redis
+      - mosquitto
+    networks:
+      - sinik-network
+    restart: unless-stopped
+
+  # Entity Service - Manages device entities and state
+  entity:
+    build: ./microservices/entity
+    container_name: sinik-entity
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./microservices/entity:/app
+      - ./shared:/app/shared
+      - ./config:/app/config
+      - ./.env:/app/.env:ro
+    environment:
+      - SERVICE_NAME=entity
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - sinik-network
+    restart: unless-stopped
+
+  # Brain Service - AI decision making and intent processing
+  brain:
+    build: ./microservices/brain
+    container_name: sinik-brain
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./microservices/brain:/app
+      - ./shared:/app/shared
+      - ./config:/app/config
+      - ./.env:/app/.env:ro
+    environment:
+      - SERVICE_NAME=brain
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - ANTHROPIC_BASE_URL=${URL_ANTHROPIC}
+    depends_on:
+      - redis
+    networks:
+      - sinik-network
+    restart: unless-stopped
+
+  # HA Manager Service - Home Assistant integration
+  ha-manager:
+    build: ./microservices/ha-manager
+    container_name: sinik-ha-manager
+    ports:
+      - "8003:8000"
+    volumes:
+      - ./microservices/ha-manager:/app
+      - ./shared:/app/shared
+      - ./config:/app/config
+      - ./.env:/app/.env:ro
+    environment:
+      - SERVICE_NAME=ha-manager
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - HA_URL=${HA_URL}
+      - HA_TOKEN=${HA_TOKEN}
+    depends_on:
+      - redis
+    networks:
+      - sinik-network
+    restart: unless-stopped
+
+  # Infrastructure Manager Service - Device discovery and management
+  infrastructure-manager:
+    build: ./microservices/infrastructure-manager
+    container_name: sinik-infrastructure-manager
+    ports:
+      - "8004:8000"
+    volumes:
+      - ./microservices/infrastructure-manager:/app
+      - ./shared:/app/shared
+      - ./config:/app/config
+      - ./.env:/app/.env:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - SERVICE_NAME=infrastructure-manager
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    depends_on:
+      - redis
+    networks:
+      - sinik-network
+    restart: unless-stopped
+
+  # Protocol Service - Protocol translation and communication
+  protocol:
+    build: ./microservices/protocol
+    container_name: sinik-protocol
+    ports:
+      - "8005:8000"
+    volumes:
+      - ./microservices/protocol:/app
+      - ./shared:/app/shared
+      - ./config:/app/config
+      - ./.env:/app/.env:ro
+    environment:
+      - SERVICE_NAME=protocol
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    depends_on:
+      - redis
+      - mosquitto
+    networks:
+      - sinik-network
+    restart: unless-stopped
+
+  # Reconciler Service - State reconciliation and conflict resolution
+  reconciler:
+    build: ./microservices/reconciler
+    container_name: sinik-reconciler
+    ports:
+      - "8006:8000"
+    volumes:
+      - ./microservices/reconciler:/app
+      - ./shared:/app/shared
+      - ./config:/app/config
+      - ./.env:/app/.env:ro
+    environment:
+      - SERVICE_NAME=reconciler
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - sinik-network
+    restart: unless-stopped
+
+  # Sensor Service - Sensor data collection and processing
+  sensor:
+    build: ./microservices/sensor
+    container_name: sinik-sensor
+    ports:
+      - "8007:8000"
+    volumes:
+      - ./microservices/sensor:/app
+      - ./shared:/app/shared
+      - ./config:/app/config
+      - ./.env:/app/.env:ro
+    environment:
+      - SERVICE_NAME=sensor
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    depends_on:
+      - redis
+      - mosquitto
+    networks:
+      - sinik-network
+    restart: unless-stopped
+
+  # Mosquitto MQTT Broker
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: sinik-mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    networks:
+      - sinik-network
+    restart: unless-stopped
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: sinik-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis/data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - sinik-network
+    restart: unless-stopped
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: sinik-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=sinik
+      - POSTGRES_PASSWORD=sinik_password
+      - POSTGRES_DB=sinik_db
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+    networks:
+      - sinik-network
+    restart: unless-stopped
+
+  # Traefik Reverse Proxy (Optional)
+  traefik:
+    image: traefik:v3.0
+    container_name: sinik-traefik
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/config:/etc/traefik
+    networks:
+      - sinik-network
+    restart: unless-stopped
+
+networks:
+  sinik-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+  postgres-data:
+  mosquitto-data:
+  mosquitto-log:
