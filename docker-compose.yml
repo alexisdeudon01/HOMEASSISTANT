@@ -53,8 +53,6 @@ services:
     volumes:
       - ./.env:/app/.env:ro
       - ./scripts/export-env.sh:/app/export-env.sh:ro
-    env_file:
-      - common.env
     environment:
       - INTERFACE=${INTERFACE:-eth0}
       - LOCAL_NETWORK=${LOCAL_NETWORK}
@@ -69,8 +67,6 @@ services:
     volumes:
       - ./.env:/app/.env:ro
       - ./scripts/export-env.sh:/app/export-env.sh:ro
-    env_file:
-      - common.env
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - HUE_BRIDGE_IP=${HUE_BRIDGE_IP}
@@ -87,8 +83,6 @@ services:
     volumes:
       - ./.env:/app/.env:ro
       - ./scripts/export-env.sh:/app/export-env.sh:ro
-    env_file:
-      - common.env
     environment:
       - HUE_BRIDGE_IP=${HUE_BRIDGE_IP}
       - HUE_API_KEY=${HUE_API_KEY}
@@ -106,8 +100,6 @@ services:
       - ./.env:/app/.env:ro
       - ./scripts/export-env.sh:/app/export-env.sh:ro
       - /home/pi/homeassistant:/ha_config:ro
-    env_file:
-      - common.env
     environment:
       - CHECK_INTERVAL=1200
       - LOCAL_NETWORK=${LOCAL_NETWORK}
@@ -129,8 +121,6 @@ services:
     volumes:
       - ./.env:/app/.env:ro
       - ./scripts/export-env.sh:/app/export-env.sh:ro
-    env_file:
-      - common.env
     environment:
       - HA_URL=http://homeassistant:8123
       - HA_TOKEN=${HA_TOKEN}
