@@ -5,6 +5,7 @@ venv/
 env/
 ENV/
 .venv/
+.legacy/*
 
 # Fichiers de cache Python
 __pycache__/
