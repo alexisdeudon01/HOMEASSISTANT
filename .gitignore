@@ -1,9 +1,4 @@
 # Fichiers d'environnement
-.env
-.env.local
-.env.*.local
-.env.production
-.env.development
 
 # Environnements virtuels Python
 venv/
