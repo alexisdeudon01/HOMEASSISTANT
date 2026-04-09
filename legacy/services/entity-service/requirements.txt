@@ -4,4 +4,4 @@ httpx==0.25.1
 aiomqtt==2.5.0
 redis==5.0.1
 pydantic==2.12.5
-aiohttp==3.13.3
+aiohttp==3.13.4
